@@ -4,7 +4,8 @@ version = "0.1.0"
 description = "Shared CLI prompt utilities that wrap existing libraries"
 requires-python = ">=3.8"
 dependencies = [
-  "InquirerPy==0.3.4",
+  "InquirerPy @ git+https://github.com/mikeyaworski/InquirerPy.git",
+  # "InquirerPy @ file:///Absolute/Path/To/InquirerPy",
   "colorama==0.4.6"
 ]
 
