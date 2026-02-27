@@ -15,7 +15,7 @@ These wrappers are very opinionated based on what I think is the smoothest exper
 Add the following to your `requirements.txt` file and run `pip install -r requirements.txt`.
 
 ```
-git+ssh://git@github.com:mikeyaworski/Python-Prompts.git@master#egg=prompts
+git+ssh://git@github.com/mikeyaworski/Python-Prompts.git@master#egg=prompts
 
 # Editable version (for local development)
 # -e Absolute/Path/To/Python-Prompts
