@@ -57,13 +57,14 @@ def get_multi_selections(message: str, choices: list[Choice], default: DefaultCh
   keybinds.register_fuzzy_search_space_keybind(prompt)
   return prompt.execute()
 
-def get_single_selection(message: str, choices: list[Choice], default: DefaultChoice | None = None):
+def get_single_selection(message: str, choices: list[Choice], default: DefaultChoice | None = None, required: bool = True):
   choices = [transform_choice(c, default) for c in choices]
   if default:
     prompt = inquirer.select(
       message=message,
       choices=choices,
       default=default,
+      mandatory=required,
       qmark='',
       amark='',
       pointer='> ',
@@ -76,7 +77,7 @@ def get_single_selection(message: str, choices: list[Choice], default: DefaultCh
       choices=choices,
       multiselect=False,
       cycle=False,
-      mandatory=True,
+      mandatory=required,
       pointer='> ',
       marker='',
       marker_pl='',
@@ -158,7 +159,7 @@ def prompt_for_folder_selections(
 ) -> str | list[str]:
   if allow_text_input: choices = ['Custom'] + choices if text_input_start else choices + ['Custom']
   selection_fn = get_single_selection if single_selection else get_multi_selections
-  selections = selection_fn(prompt, choices, default=default)
+  selections = selection_fn(prompt, choices, default=default, required=True)
   if single_selection: selections = [selections]
   if 'Custom' in selections:
     custom_folders = loop_inputs_to_array(

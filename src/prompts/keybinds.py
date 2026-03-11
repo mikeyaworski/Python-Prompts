@@ -42,7 +42,10 @@ def register_fuzzy_search_enter_keybind(prompt):
     no_choices_selected = all(not choice['enabled'] for choice in prompt.content_control.choices)
     choices_selected = not no_choices_selected
     if not buffer.text and no_choices_selected:
-      event.app.exit(result=[])
+      if prompt._mandatory:
+        prompt._set_error(prompt._mandatory_message)
+      else:
+        event.app.exit(result=[])
     elif not buffer.text and choices_selected:
       prompt._handle_enter(event)
     elif buffer.text:
