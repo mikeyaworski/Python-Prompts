@@ -91,6 +91,24 @@ def get_single_selection(message: str, choices: list[Choice], default: DefaultCh
     keybinds.register_right_keybind(prompt)
   return prompt.execute()
 
+def get_number_input(
+  message: str,
+  min_allowed: float | None = None,
+  max_allowed: float | None = None,
+  required: bool = True,
+  default: float | None = None,
+  float_allowed: bool = False,
+):
+  prompt = inquirer.number(
+    message=message,
+    min_allowed=min_allowed,
+    max_allowed=max_allowed,
+    mandatory=required,
+    default=default,
+    float_allowed=float_allowed,
+  )
+  return prompt.execute()
+
 def get_confirmation(message: str, long_message: str | None = None):
   if long_message: print(long_message)
   return inquirer.confirm(
