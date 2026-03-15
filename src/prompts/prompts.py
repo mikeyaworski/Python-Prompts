@@ -1,4 +1,6 @@
 from InquirerPy import inquirer
+from tkinter import filedialog, Tk
+from enum import Enum
 from . import keybinds
 
 # The toolkit used in InquirerPy breaks ANSI formatting, so we need to patch it.
@@ -186,3 +188,66 @@ def prompt_for_folder_selections(
     )
     selections = [item for item in selections if not item == 'Custom'] + custom_folders
   return selections[0] if single_selection else selections
+
+def prompt_for_folder(message: str) -> str | None:
+  root = Tk()
+  root.withdraw()  # Hide the root window
+  folder_path = filedialog.askdirectory(title=message)
+  return folder_path if folder_path else None
+
+def prompt_folder_required(prompt_folder_fn, retry_message='Folder is required. Press Enter to try again.'):
+  while not (folder := prompt_folder_fn()):
+    input(retry_message)
+  return folder
+
+class FileTypesCategory(Enum):
+  DEFAULT = 'DEFAULT'
+  VIDEO = 'VIDEO'
+  M3U8 = 'M3U8'
+  LOG = 'LOG'
+  TEXT = 'TEXT'
+
+FILE_TYPES_MAPPING = {
+  FileTypesCategory.DEFAULT: [
+    ('All Files', '*.*'),
+  ],
+  FileTypesCategory.VIDEO: [
+    ('MP4 files', '*.mp4'),
+    ('MKV files', '*.mkv'),
+    ('All Files', '*.*'),
+  ],
+  FileTypesCategory.M3U8: [
+    ('M3U8 files', '*.m3u8'),
+    ('All Files', '*.*'),
+  ],
+  FileTypesCategory.LOG: [
+    ('Log files', '*.log'),
+    ('Text Files', '*.txt'),
+    ('All Files', '*.*'),
+  ],
+  FileTypesCategory.TEXT: [
+    ('Text Files', '*.txt'),
+    ('All Files', '*.*'),
+  ],
+}
+
+def prompt_for_new_file_path(
+  message: str,
+  default_extension: str = '',
+  file_types: FileTypesCategory | list[tuple[str, str]] | None = None,
+  initial_dir: str | None =None,
+  initial_file: str | None =None,
+) -> str | None:
+  file_types = file_types if file_types is not None else FileTypesCategory.DEFAULT
+  if isinstance(file_types, FileTypesCategory):
+    file_types = FILE_TYPES_MAPPING.get(file_types, FILE_TYPES_MAPPING[FileTypesCategory.DEFAULT])
+  root = Tk()
+  root.withdraw()  # Hide the root window
+  file_path = filedialog.asksaveasfilename(
+    title=message,
+    defaultextension=default_extension,
+    filetypes=file_types,
+    initialdir=initial_dir,
+    initialfile=initial_file
+  )
+  return file_path if file_path else None
