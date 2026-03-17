@@ -126,10 +126,10 @@ def prompt_exit_or_redo(default: str = 'EXIT'):
   )
   return choice == 'REDO'
 
-def redo_loop(fn, default: str = 'EXIT', args: list = [], initial_args: list = []):
-  fn(*(initial_args or args))
+def redo_loop(fn, default: str = 'EXIT', args: dict = {}, initial_args: dict = {}):
+  fn(**(initial_args or args))
   while redo := prompt_exit_or_redo(default=default):
-    fn(*args)
+    fn(**(args))
 
 def loop_for_value(prompt, fn):
   while value := input(prompt):
