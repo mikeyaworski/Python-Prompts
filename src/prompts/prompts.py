@@ -176,10 +176,11 @@ def prompt_for_folder_selections(
   allow_text_input: bool = True,
   text_input_start: bool = True,
   single_selection: bool = False,
+  required: bool = True,
 ) -> str | list[str]:
   if allow_text_input: choices = ['Custom'] + choices if text_input_start else choices + ['Custom']
   selection_fn = get_single_selection if single_selection else get_multi_selections
-  selections = selection_fn(prompt, choices, default=default, required=True)
+  selections = selection_fn(prompt, choices, default=default, required=required)
   if single_selection: selections = [selections]
   if 'Custom' in selections:
     custom_folders = loop_inputs_to_array(
