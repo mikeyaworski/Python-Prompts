@@ -1,3 +1,4 @@
+import time
 from InquirerPy import inquirer
 from tkinter import filedialog, Tk
 from enum import Enum
@@ -156,16 +157,19 @@ def prompt_for_append_selections(
   default: DefaultChoice | None = None,
   allow_text_input: bool = False,
   text_input_start: bool = False,
+  allow_timestamp: bool = True,
 ) -> str:
-  choices = ['Custom Text'] + choices if text_input_start else choices + ['Custom Text'] if allow_text_input else choices
+  choices = [('Custom Text', 'CUSTOM_TEXT')] + choices if text_input_start else choices + [('Custom Text', 'CUSTOM_TEXT')] if allow_text_input else choices
+  if allow_timestamp: choices = choices + [('Current Timestamp', 'CURRENT_TIMESTAMP')]
   selections = get_multi_selections(prompt, choices, default=default)
-  has_custom_text = 'Custom Text' in selections
-  if has_custom_text:
+  if 'CUSTOM_TEXT' in selections:
     custom_text = input('Text to append: ')
     if custom_text:
-      selections = [custom_text if item == 'Custom Text' else item for item in selections]
+      selections = [custom_text if item == 'CUSTOM_TEXT' else item for item in selections]
     else:
-      selections = [item for item in selections if not item == 'Custom Text']
+      selections = [item for item in selections if not item == 'CUSTOM_TEXT']
+  if 'CURRENT_TIMESTAMP' in selections:
+    selections = [str(int(time.time() * 1000)) if item == 'CURRENT_TIMESTAMP' else item for item in selections]
   text = ' - '.join(selections) if selections else ''
   return text
 
