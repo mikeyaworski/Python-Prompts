@@ -240,8 +240,8 @@ def prompt_for_new_file_path(
   message: str,
   default_extension: str = '',
   file_types: FileTypesCategory | list[tuple[str, str]] | None = None,
-  initial_dir: str | None =None,
-  initial_file: str | None =None,
+  initial_dir: str | None = None,
+  initial_file: str | None = None,
 ) -> str | None:
   file_types = file_types if file_types is not None else FileTypesCategory.DEFAULT
   if isinstance(file_types, FileTypesCategory):
@@ -256,3 +256,8 @@ def prompt_for_new_file_path(
     initialfile=initial_file
   )
   return file_path if file_path else None
+
+def prompt_fn_required(prompt_fn, retry_message='Input is required. Press Enter to try again.', **kwargs):
+  while not (result := prompt_fn(**kwargs)):
+    input(retry_message)
+  return result
