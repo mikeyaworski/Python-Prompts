@@ -223,6 +223,8 @@ class FileTypesCategory(Enum):
   M3U8 = 'M3U8'
   LOG = 'LOG'
   TEXT = 'TEXT'
+  JSON = 'JSON'
+  JSON_AND_TEXT = 'JSON_AND_TEXT'
 
 FILE_TYPES_MAPPING = {
   FileTypesCategory.DEFAULT: [
@@ -243,6 +245,16 @@ FILE_TYPES_MAPPING = {
     ('All Files', '*.*'),
   ],
   FileTypesCategory.TEXT: [
+    ('Text Files', '*.txt'),
+    ('All Files', '*.*'),
+  ],
+  FileTypesCategory.JSON: [
+    ('JSON files', '*.json5 *.json'),
+    ('All Files', '*.*'),
+  ],
+  FileTypesCategory.JSON_AND_TEXT: [
+    ('JSON and Text files', '*.json5 *.json *.txt'),
+    ('JSON files', '*.json *.json5'),
     ('Text Files', '*.txt'),
     ('All Files', '*.*'),
   ],
