@@ -94,6 +94,18 @@ def get_single_selection(message: str, choices: list[Choice], default: DefaultCh
     keybinds.register_right_keybind(prompt)
   return prompt.execute()
 
+def get_text_input(message: str, default: str | None = None, required: bool = True, multiline: bool = False):
+  prompt = inquirer.text(
+    message=message,
+    default=default,
+    mandatory=required,
+    multiline=multiline,
+    qmark='',
+    amark='',
+    vi_mode=True,
+  )
+  return prompt.execute()
+
 def get_number_input(
   message: str,
   min_allowed: float | None = None,
