@@ -113,7 +113,7 @@ def get_number_input(
   required: bool = True,
   default: float | None = None,
   float_allowed: bool = False,
-):
+) -> float | int | None:
   prompt = inquirer.number(
     message=message,
     min_allowed=min_allowed,
@@ -122,7 +122,8 @@ def get_number_input(
     default=default,
     float_allowed=float_allowed,
   )
-  return prompt.execute()
+  value = prompt.execute()
+  return default if value is None or value == '' else float(value) if float_allowed else int(value)
 
 def get_confirmation(message: str, long_message: str | None = None):
   if long_message: print(long_message)
