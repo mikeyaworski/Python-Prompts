@@ -1,6 +1,7 @@
 import time
 from InquirerPy import inquirer
 from tkinter import filedialog, Tk
+from typing import Sequence
 from enum import Enum
 from . import keybinds
 
@@ -30,11 +31,11 @@ def transform_choice(choice: Choice, default: DefaultChoice | None = None):
     }
   return choice
 
-def get_multi_selections(message: str, choices: list[Choice], default: DefaultChoice | None = None, required: bool = False):
-  choices = [transform_choice(c, default) for c in choices]
+def get_multi_selections(message: str, choices: Sequence[Choice], default: DefaultChoice | None = None, required: bool = False):
+  transformed_choices = [transform_choice(c, default) for c in choices]
   prompt = inquirer.fuzzy(
     message=message,
-    choices=choices,
+    choices=transformed_choices,
     mandatory=required,
     multiselect=True,
     cycle=False,
@@ -60,12 +61,12 @@ def get_multi_selections(message: str, choices: list[Choice], default: DefaultCh
   keybinds.register_fuzzy_search_space_keybind(prompt)
   return prompt.execute()
 
-def get_single_selection(message: str, choices: list[Choice], default: DefaultChoice | None = None, required: bool = True):
-  choices = [transform_choice(c, default) for c in choices]
+def get_single_selection(message: str, choices: Sequence[Choice], default: DefaultChoice | None = None, required: bool = True):
+  transformed_choices = [transform_choice(c, default) for c in choices]
   if default:
     prompt = inquirer.select(
       message=message,
-      choices=choices,
+      choices=transformed_choices,
       default=default,
       mandatory=required,
       qmark='',
@@ -77,7 +78,7 @@ def get_single_selection(message: str, choices: list[Choice], default: DefaultCh
   else:
     prompt = inquirer.fuzzy(
       message=message,
-      choices=choices,
+      choices=transformed_choices,
       multiselect=False,
       cycle=False,
       mandatory=required,
@@ -166,14 +167,14 @@ def loop_inputs_to_array(prompt_str, cap: int | None = None):
 
 def prompt_for_append_selections(
   prompt: str,
-  choices: list[Choice],
+  choices: Sequence[Choice],
   default: DefaultChoice | None = None,
   allow_text_input: bool = False,
   text_input_start: bool = False,
   allow_timestamp: bool = True,
 ) -> str:
-  choices = [('Custom Text', 'CUSTOM_TEXT')] + choices if text_input_start else choices + [('Custom Text', 'CUSTOM_TEXT')] if allow_text_input else choices
-  if allow_timestamp: choices = choices + [('Current Timestamp', 'CURRENT_TIMESTAMP')]
+  choices = [('Custom Text', 'CUSTOM_TEXT')] + list(choices) if text_input_start else list(choices) + [('Custom Text', 'CUSTOM_TEXT')] if allow_text_input else choices
+  if allow_timestamp: choices = list(choices) + [('Current Timestamp', 'CURRENT_TIMESTAMP')]
   selections = get_multi_selections(prompt, choices, default=default)
   if 'CUSTOM_TEXT' in selections:
     custom_text = input('Text to append: ')
@@ -188,14 +189,14 @@ def prompt_for_append_selections(
 
 def prompt_for_folder_selections(
   prompt: str,
-  choices: list[Choice],
+  choices: Sequence[Choice],
   default: DefaultChoice | None = None,
   allow_text_input: bool = True,
   text_input_start: bool = True,
   single_selection: bool = False,
   required: bool = True,
 ) -> str | list[str]:
-  if allow_text_input: choices = ['Custom'] + choices if text_input_start else choices + ['Custom']
+  if allow_text_input: choices = ['Custom'] + list(choices) if text_input_start else list(choices) + ['Custom']
   selection_fn = get_single_selection if single_selection else get_multi_selections
   selections = selection_fn(prompt, choices, default=default, required=required)
   if single_selection: selections = [selections]
