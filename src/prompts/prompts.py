@@ -98,7 +98,7 @@ def get_single_selection(message: str, choices: Sequence[Choice], default: Defau
 def get_text_input(message: str, default: str | None = None, required: bool = True, multiline: bool = False):
   prompt = inquirer.text(
     message=message,
-    default=default,
+    default=default or '',
     mandatory=required,
     multiline=multiline,
     qmark='',
