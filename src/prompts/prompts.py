@@ -1,7 +1,11 @@
 import time
 from InquirerPy import inquirer
 from tkinter import filedialog, Tk
-from typing import Sequence
+from typing import (
+  Sequence,
+  Callable,
+  Any
+)
 from enum import Enum
 from . import keybinds
 
@@ -141,10 +145,14 @@ def prompt_exit_or_redo(default: str = 'EXIT'):
   )
   return choice == 'REDO'
 
-def redo_loop(fn, default: str = 'EXIT', args: dict = {}, initial_args: dict = {}):
-  fn(**(initial_args or args))
-  while redo := prompt_exit_or_redo(default=default):
-    fn(**(args))
+def redo_loop(default: str = 'EXIT'):
+  def decorator(fn: Callable):
+    def wrapper(*, args: dict | None = None, initial_args: dict | None = None):
+      fn(**(initial_args or args or {}))
+      while redo := prompt_exit_or_redo(default=default):
+        fn(**(args or {}))
+    return wrapper
+  return decorator
 
 def loop_for_value(prompt, fn):
   while value := input(prompt):
