@@ -137,19 +137,26 @@ def get_confirmation(message: str, long_message: str | None = None):
     default=False,
   ).execute()
 
-def prompt_exit_or_redo(default: str = 'EXIT'):
+def prompt_exit_or_redo(
+  default: str = 'EXIT',
+  redo_text: str = 'Redo',
+  exit_text: str = 'Exit',
+):
   choice = get_single_selection(
     message='Redo or exit?',
-    choices=[('Redo', 'REDO'), ('Exit', 'EXIT')],
+    choices=[(redo_text, 'REDO'), (exit_text, 'EXIT')],
     default=default,
   )
   return choice == 'REDO'
 
-def redo_loop(default: str = 'EXIT'):
+def redo_loop(
+  default: str = 'EXIT',
+  **prompt_kw_args,
+):
   def decorator(fn: Callable):
     def wrapper(*, args: dict | None = None, initial_args: dict | None = None):
       fn(**(initial_args or args or {}))
-      while redo := prompt_exit_or_redo(default=default):
+      while redo := prompt_exit_or_redo(default=default, **prompt_kw_args):
         fn(**(args or {}))
     return wrapper
   return decorator
