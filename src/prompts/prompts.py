@@ -8,6 +8,7 @@ from typing import (
 )
 from enum import Enum
 from . import keybinds
+from . import utils
 
 # The toolkit used in InquirerPy breaks ANSI formatting, so we need to patch it.
 from colorama import just_fix_windows_console
@@ -223,10 +224,11 @@ def prompt_for_folder_selections(
     selections = [item for item in selections if not item == 'Custom'] + custom_folders
   return selections[0] if single_selection else selections
 
-def prompt_for_folder(message: str) -> str | None:
+def prompt_for_folder(message: str, refocus_after_selection: bool = False) -> str | None:
   root = Tk()
   root.withdraw()  # Hide the root window
   folder_path = filedialog.askdirectory(title=message)
+  if refocus_after_selection: utils.focus_console_window()
   return folder_path if folder_path else None
 
 def prompt_folder_required(prompt_folder_fn, retry_message='Folder is required. Press Enter to try again.'):
@@ -283,6 +285,7 @@ def prompt_for_new_file_path(
   file_types: FileTypesCategory | list[tuple[str, str]] | None = None,
   initial_dir: str | None = None,
   initial_file: str | None = None,
+  refocus_after_selection: bool = False,
 ) -> str | None:
   file_types = file_types if file_types is not None else FileTypesCategory.DEFAULT
   if isinstance(file_types, FileTypesCategory):
@@ -296,6 +299,7 @@ def prompt_for_new_file_path(
     initialdir=initial_dir,
     initialfile=initial_file
   )
+  if refocus_after_selection: utils.focus_console_window()
   return file_path if file_path else None
 
 def prompt_fn_required(prompt_fn, retry_message='Input is required. Press Enter to try again.', **kwargs):
