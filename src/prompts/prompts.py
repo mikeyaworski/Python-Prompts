@@ -231,11 +231,6 @@ def prompt_for_folder(message: str, refocus_after_selection: bool = False) -> st
   if refocus_after_selection: utils.focus_console_window()
   return folder_path if folder_path else None
 
-def prompt_folder_required(prompt_folder_fn, retry_message='Folder is required. Press Enter to try again.'):
-  while not (folder := prompt_folder_fn()):
-    input(retry_message)
-  return folder
-
 class FileTypesCategory(Enum):
   DEFAULT = 'DEFAULT'
   VIDEO = 'VIDEO'
@@ -306,3 +301,10 @@ def prompt_fn_required(prompt_fn, retry_message='Input is required. Press Enter 
   while not (result := prompt_fn(**kwargs)):
     input(retry_message)
   return result
+
+def prompt_folder_required(retry_message='Folder selection is required. Press Enter to try again.', **kwargs):
+  return prompt_fn_required(
+    prompt_for_folder,
+    retry_message=retry_message,
+    **kwargs,
+  )
