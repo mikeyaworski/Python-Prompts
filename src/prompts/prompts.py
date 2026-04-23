@@ -275,7 +275,7 @@ FILE_TYPES_MAPPING = {
 }
 
 def prompt_for_new_file_path(
-  message: str,
+  title: str | None = None,
   default_extension: str = '',
   file_types: FileTypesCategory | list[tuple[str, str]] | None = None,
   initial_dir: str | None = None,
@@ -288,11 +288,11 @@ def prompt_for_new_file_path(
   root = Tk()
   root.withdraw()  # Hide the root window
   file_path = filedialog.asksaveasfilename(
-    title=message,
+    title=title,
     defaultextension=default_extension,
     filetypes=file_types,
     initialdir=initial_dir,
-    initialfile=initial_file
+    initialfile=initial_file,
   )
   if refocus_after_selection: utils.focus_console_window()
   return file_path if file_path else None
