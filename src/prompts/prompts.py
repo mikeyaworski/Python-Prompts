@@ -66,7 +66,13 @@ def get_multi_selections(message: str, choices: Sequence[Choice], default: Defau
   keybinds.register_fuzzy_search_space_keybind(prompt)
   return prompt.execute()
 
-def get_single_selection(message: str, choices: Sequence[Choice], default: DefaultChoice | None = None, required: bool = True):
+def get_single_selection(
+  message: str,
+  choices: Sequence[Choice],
+  default: DefaultChoice | None = None,
+  required: bool = True,
+  match_exact: bool = False,
+):
   transformed_choices = [transform_choice(c, default) for c in choices]
   if default:
     prompt = inquirer.select(
@@ -85,6 +91,7 @@ def get_single_selection(message: str, choices: Sequence[Choice], default: Defau
       message=message,
       choices=transformed_choices,
       multiselect=False,
+      match_exact=match_exact,
       cycle=False,
       mandatory=required,
       pointer='> ',
