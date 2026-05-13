@@ -231,10 +231,10 @@ def prompt_for_folder_selections(
     selections = [item for item in selections if not item == 'Custom'] + custom_folders
   return selections[0] if single_selection else selections
 
-def prompt_for_folder(message: str, refocus_after_selection: bool = False) -> str | None:
+def prompt_for_folder(title: str, refocus_after_selection: bool = False) -> str | None:
   root = Tk()
   root.withdraw()  # Hide the root window
-  folder_path = filedialog.askdirectory(title=message)
+  folder_path = filedialog.askdirectory(title=title)
   if refocus_after_selection: utils.focus_console_window()
   return folder_path if folder_path else None
 
