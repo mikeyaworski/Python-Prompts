@@ -178,7 +178,7 @@ def get_required_value(prompt):
     print('This is required.')
   return value
 
-def loop_inputs_to_array(prompt_str, cap: int | None = None):
+def loop_inputs_to_array(prompt_str, cap: int | None = None, split_items_fn: Callable[[str], list[str]] | None = None):
   inputs = []
   while cap is None or len(inputs) < cap:
     current_input = input(prompt_str)
@@ -186,6 +186,8 @@ def loop_inputs_to_array(prompt_str, cap: int | None = None):
       inputs.append(current_input)
     else:
       break
+  if split_items_fn:
+    return [item for line_input in inputs for item in split_items_fn(line_input)]
   return inputs
 
 def prompt_for_append_selections(
