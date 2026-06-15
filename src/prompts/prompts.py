@@ -64,7 +64,7 @@ def get_multi_selections(message: str, choices: Sequence[Choice], default: Defau
   keybinds.register_right_keybind(prompt)
   keybinds.register_fuzzy_search_enter_keybind(prompt)
   keybinds.register_fuzzy_search_space_keybind(prompt)
-  return prompt.execute()
+  return prompt.execute() or []
 
 def get_single_selection(
   message: str,
