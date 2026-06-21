@@ -300,7 +300,7 @@ def prompt_for_new_file_path(
   if isinstance(file_types, FileTypesCategory):
     file_types = FILE_TYPES_MAPPING.get(file_types, FILE_TYPES_MAPPING[FileTypesCategory.DEFAULT])
   root = Tk()
-  root.withdraw()  # Hide the root window
+  root.withdraw() # Hide the root window
   file_path = filedialog.asksaveasfilename(
     title=title,
     defaultextension=default_extension,
@@ -310,6 +310,25 @@ def prompt_for_new_file_path(
   )
   if refocus_after_selection: utils.focus_console_window()
   return file_path if file_path else None
+
+def prompt_for_files(
+  title: str | None = None,
+  file_types: FileTypesCategory | list[tuple[str, str]] | None = None,
+  initial_dir: str | None = None,
+  refocus_after_selection: bool = False,
+) -> list[str]:
+  file_types = file_types if file_types is not None else FileTypesCategory.DEFAULT
+  if isinstance(file_types, FileTypesCategory):
+    file_types = FILE_TYPES_MAPPING.get(file_types, FILE_TYPES_MAPPING[FileTypesCategory.DEFAULT])
+  root = Tk()
+  root.withdraw() # Hide the root window
+  file_paths = filedialog.askopenfilenames(
+    title=title,
+    filetypes=file_types,
+    initialdir=initial_dir,
+  )
+  if refocus_after_selection: utils.focus_console_window()
+  return list(file_paths) if file_paths else []
 
 def prompt_fn_required(prompt_fn, retry_message='Input is required. Press Enter to try again.', **kwargs):
   while not (result := prompt_fn(**kwargs)):
