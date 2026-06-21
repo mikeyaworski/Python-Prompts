@@ -3,6 +3,7 @@ import subprocess
 import sys
 from InquirerPy import inquirer
 from tkinter import filedialog, Tk
+from importlib.resources import files, as_file
 from typing import (
   Sequence,
   Callable,
@@ -237,15 +238,13 @@ def prompt_for_folder_selections(
 
 def prompt_for_folder(title: str, refocus_after_selection: bool = False) -> str | None:
   if utils.is_mac():
-    result = subprocess.run(
-      args=[
-        'osascript',
-        '-e',
-        f'POSIX path of (choose folder with prompt "{title}")'
-      ],
-      capture_output=True,
-      text=True,
-    )
+    script_ref = files('prompts').joinpath('applescript/select_folder.applescript')
+    with as_file(script_ref) as script_path:
+      result = subprocess.run(
+        ['osascript', str(script_path), title or ''],
+        capture_output=True,
+        text=True,
+      )
     if result.returncode == 0:
       return result.stdout.strip()
     else:
@@ -319,20 +318,13 @@ def prompt_for_new_file_path(
     file_types = FILE_TYPES_MAPPING.get(file_types, FILE_TYPES_MAPPING[FileTypesCategory.DEFAULT])
 
   if utils.is_mac():
-    choose_parts = ['(choose file name']
-    if title:
-      choose_parts.append(f' with prompt "{title}"')
-    if initial_file:
-      choose_parts.append(f' default name "{initial_file}"')
-    if initial_dir:
-      choose_parts.append(f' default location (POSIX file "{initial_dir}")')
-    choose_parts.append(')')
-    script = 'POSIX path of ' + ''.join(choose_parts)
-    result = subprocess.run(
-      args=['osascript', '-e', script],
-      capture_output=True,
-      text=True,
-    )
+    script_ref = files('prompts').joinpath('applescript/select_file.applescript')
+    with as_file(script_ref) as script_path:
+      result = subprocess.run(
+        ['osascript', str(script_path), title or '', initial_file or '', initial_dir or ''],
+        capture_output=True,
+        text=True,
+      )
     if result.returncode == 0:
       file_path = result.stdout.strip()
       if refocus_after_selection: utils.focus_console_window()
@@ -364,29 +356,13 @@ def prompt_for_files(
     file_types = FILE_TYPES_MAPPING.get(file_types, FILE_TYPES_MAPPING[FileTypesCategory.DEFAULT])
 
   if utils.is_mac():
-    choose_parts = ['choose file']
-    if title:
-      choose_parts.append(f' with prompt "{title}"')
-    choose_parts.append(' multiple selections allowed true')
-    choose_expr = ' '.join(choose_parts)
-
-    script_lines = [
-      f'set theFiles to {choose_expr}',
-      'set outStr to ""',
-      'repeat with f in theFiles',
-      'set outStr to outStr & POSIX path of f & "\\n"',
-      'end repeat',
-      'outStr'
-    ]
-    # pass each line with -e to osascript
-    args = ['osascript']
-    for line in script_lines:
-      args += ['-e', line]
-    result = subprocess.run(
-      args=args,
-      capture_output=True,
-      text=True,
-    )
+    script_ref = files('prompts').joinpath('applescript/select_files.applescript')
+    with as_file(script_ref) as script_path:
+      result = subprocess.run(
+        ['osascript', str(script_path), title or ''],
+        capture_output=True,
+        text=True,
+      )
     if result.returncode == 0:
       paths = [p for p in result.stdout.splitlines() if p]
       if refocus_after_selection: utils.focus_console_window()
