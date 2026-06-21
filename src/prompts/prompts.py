@@ -244,6 +244,7 @@ class FileTypesCategory(Enum):
   DEFAULT = 'DEFAULT'
   VIDEO = 'VIDEO'
   M3U8 = 'M3U8'
+  MEDIA = 'MEDIA'
   LOG = 'LOG'
   TEXT = 'TEXT'
   JSON = 'JSON'
@@ -260,6 +261,10 @@ FILE_TYPES_MAPPING = {
   ],
   FileTypesCategory.M3U8: [
     ('M3U8 files', '*.m3u8'),
+    ('All Files', '*.*'),
+  ],
+  FileTypesCategory.MEDIA: [
+    ('Media Files', '*.m3u8 *.mp4 *.m4v *.mkv *.avi *.mov *.mp3 *.wav *jpg *.jpeg *.png *.gif *.webp'),
     ('All Files', '*.*'),
   ],
   FileTypesCategory.LOG: [
