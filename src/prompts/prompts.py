@@ -236,7 +236,7 @@ def prompt_for_folder_selections(
     selections = [item for item in selections if not item == 'Custom'] + custom_folders
   return selections[0] if single_selection else selections
 
-def prompt_for_folder(title: str, refocus_after_selection: bool = False) -> str | None:
+def prompt_for_folder(title: str, refocus_after_selection: bool = True) -> str | None:
   if utils.is_mac():
     script_ref = files('prompts').joinpath('applescript/select_folder.applescript')
     with as_file(script_ref) as script_path:
@@ -311,7 +311,7 @@ def prompt_for_new_file_path(
   file_types: FileTypesCategory | list[tuple[str, str]] | None = None,
   initial_dir: str | None = None,
   initial_file: str | None = None,
-  refocus_after_selection: bool = False,
+  refocus_after_selection: bool = True,
 ) -> str | None:
   file_types = file_types if file_types is not None else FileTypesCategory.DEFAULT
   if isinstance(file_types, FileTypesCategory):
@@ -349,7 +349,7 @@ def prompt_for_files(
   title: str | None = None,
   file_types: FileTypesCategory | list[tuple[str, str]] | None = None,
   initial_dir: str | None = None,
-  refocus_after_selection: bool = False,
+  refocus_after_selection: bool = True,
 ) -> list[str]:
   file_types = file_types if file_types is not None else FileTypesCategory.DEFAULT
   if isinstance(file_types, FileTypesCategory):
