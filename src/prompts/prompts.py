@@ -252,7 +252,7 @@ def prompt_for_folder(title: str, refocus_after_selection: bool = True) -> str |
     return None
 
   root = Tk()
-  root.withdraw()  # Hide the root window
+  root.withdraw() # Hide the root window
   folder_path = filedialog.askdirectory(title=title)
   if refocus_after_selection: utils.focus_console_window()
   return folder_path if folder_path else None
@@ -350,6 +350,7 @@ def prompt_for_files(
   file_types: FileTypesCategory | list[tuple[str, str]] | None = None,
   initial_dir: str | None = None,
   refocus_after_selection: bool = True,
+  multi_select: bool = True,
 ) -> list[str]:
   file_types = file_types if file_types is not None else FileTypesCategory.DEFAULT
   if isinstance(file_types, FileTypesCategory):
@@ -366,18 +367,23 @@ def prompt_for_files(
     if result.returncode == 0:
       paths = [p for p in result.stdout.splitlines() if p]
       if refocus_after_selection: utils.focus_console_window()
-      return paths
+      return paths if multi_select else paths[:1]
     else:
       print('Error selecting files:', result.stderr, file=sys.stderr)
       return []
 
   root = Tk()
   root.withdraw() # Hide the root window
-  file_paths = filedialog.askopenfilenames(
-    title=title,
-    filetypes=file_types,
-    initialdir=initial_dir,
-  )
+  prompt_args = {
+    'title': title,
+    'filetypes': file_types,
+    'initialdir': initial_dir,
+  }
+  if multi_select:
+    file_paths = filedialog.askopenfilenames(**prompt_args)
+  else:
+    file_path = filedialog.askopenfilename(**prompt_args)
+    file_paths = [file_path] if file_path else []
   if refocus_after_selection: utils.focus_console_window()
   return list(file_paths) if file_paths else []
 
