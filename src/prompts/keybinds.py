@@ -67,3 +67,29 @@ def register_fuzzy_search_space_keybind(prompt):
     else:
       buffer.text += ' '
       buffer.cursor_position += 1
+
+def register_move_up_keybind(prompt):
+  @prompt.register_kb('c-up')
+  def _(event):
+    index = prompt.content_control.selected_choice_index
+    if index > 0:
+      choices = prompt.content_control.choices
+      choices[index - 1], choices[index] = (
+        choices[index],
+        choices[index - 1],
+      )
+      prompt.content_control.selected_choice_index = index - 1
+      event.app.invalidate()
+
+def register_move_down_keybind(prompt):
+  @prompt.register_kb('c-down')
+  def _(event):
+    index = prompt.content_control.selected_choice_index
+    choices = prompt.content_control.choices
+    if index < len(choices) - 1:
+      choices[index], choices[index + 1] = (
+        choices[index + 1],
+        choices[index],
+      )
+      prompt.content_control.selected_choice_index = index + 1
+      event.app.invalidate()

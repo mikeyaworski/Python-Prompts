@@ -110,6 +110,24 @@ def get_single_selection(
     keybinds.register_right_keybind(prompt)
   return prompt.execute()
 
+def reorder(
+  choices: Sequence[Choice],
+  default: Any | None = None,
+  message: str = 'Reorder items:',
+):
+  transformed_choices = [transform_choice(c) for c in choices]
+  prompt = inquirer.select(
+    message=message,
+    choices=transformed_choices,
+    default=default,
+    pointer=' >',
+    long_instruction=' Navigate: ↑/↓ • Move: Ctrl + ↑/↓ • Submit: Enter',
+  )
+  keybinds.register_move_up_keybind(prompt)
+  keybinds.register_move_down_keybind(prompt)
+  prompt.execute()
+  return [choice['value'] for choice in prompt.content_control.choices]
+
 def get_text_input(message: str, default: str | None = None, required: bool = True, multiline: bool = False):
   prompt = inquirer.text(
     message=message,
