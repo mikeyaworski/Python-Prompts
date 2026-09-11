@@ -190,6 +190,29 @@ def redo_loop(
     return wrapper
   return decorator
 
+def require_function_value(
+  validator_fn: Callable[..., bool] | None = None,
+  error_message: str = 'Invalid value. Press Enter to try again.',
+):
+  '''
+  validator_fn must return False if the value is invalid.
+  '''
+  validator_fn = validator_fn or (lambda x: x is None)
+  def decorator(fn: Callable):
+    def fn_return_exception(*args, **kwargs):
+      try:
+        return fn(*args, **kwargs)
+      except Exception as e:
+        return e
+    def wrapper(*, args: dict | None = None, initial_args: dict | None = None):
+      result = fn_return_exception(**(initial_args or args or {}))
+      while isinstance(result, Exception) or not validator_fn(result):
+        input(error_message)
+        result = fn_return_exception(**(args or {}))
+      return result
+    return wrapper
+  return decorator
+
 def loop_for_value(prompt, fn):
   while value := input(prompt):
     fn(value)
