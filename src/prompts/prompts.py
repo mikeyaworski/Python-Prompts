@@ -277,6 +277,21 @@ def prompt_for_folder_selections(
     selections = [item for item in selections if not item == 'Custom'] + custom_folders
   return selections[0] if single_selection else selections
 
+def _create_dialog_root() -> Tk:
+  """
+  Create a hidden Tk root window to parent native dialogs.
+
+  The root is made topmost so that dialogs owned by it appear above other windows,
+  even when Windows' foreground lock prevents the process from activating windows
+  (e.g. when launched from Explorer with Windows Terminal as the default terminal).
+  """
+  root = Tk()
+  root.withdraw() # Hide the root window
+  root.attributes('-topmost', True)
+  root.lift()
+  root.focus_force()
+  return root
+
 def prompt_for_folder(title: str, refocus_after_selection: bool = True) -> str | None:
   if utils.is_mac():
     script_ref = files('prompts').joinpath('applescript/select_folder.applescript')
@@ -292,9 +307,11 @@ def prompt_for_folder(title: str, refocus_after_selection: bool = True) -> str |
       print('Error selecting folder:', result.stderr, file=sys.stderr)
     return None
 
-  root = Tk()
-  root.withdraw() # Hide the root window
-  folder_path = filedialog.askdirectory(title=title)
+  root = _create_dialog_root()
+  try:
+    folder_path = filedialog.askdirectory(title=title, parent=root)
+  finally:
+    root.destroy()
   if refocus_after_selection: utils.focus_console_window()
   return folder_path if folder_path else None
 
@@ -374,15 +391,18 @@ def prompt_for_new_file_path(
       print('Error selecting file:', result.stderr, file=sys.stderr)
       return None
 
-  root = Tk()
-  root.withdraw() # Hide the root window
-  file_path = filedialog.asksaveasfilename(
-    title=title,
-    defaultextension=default_extension,
-    filetypes=file_types,
-    initialdir=initial_dir,
-    initialfile=initial_file,
-  )
+  root = _create_dialog_root()
+  try:
+    file_path = filedialog.asksaveasfilename(
+      title=title,
+      defaultextension=default_extension,
+      filetypes=file_types,
+      initialdir=initial_dir,
+      initialfile=initial_file,
+      parent=root,
+    )
+  finally:
+    root.destroy()
   if refocus_after_selection: utils.focus_console_window()
   return file_path if file_path else None
 
@@ -413,18 +433,21 @@ def prompt_for_files(
       print('Error selecting files:', result.stderr, file=sys.stderr)
       return []
 
-  root = Tk()
-  root.withdraw() # Hide the root window
+  root = _create_dialog_root()
   prompt_args = {
     'title': title,
     'filetypes': file_types,
     'initialdir': initial_dir,
+    'parent': root,
   }
-  if multi_select:
-    file_paths = filedialog.askopenfilenames(**prompt_args)
-  else:
-    file_path = filedialog.askopenfilename(**prompt_args)
-    file_paths = [file_path] if file_path else []
+  try:
+    if multi_select:
+      file_paths = filedialog.askopenfilenames(**prompt_args)
+    else:
+      file_path = filedialog.askopenfilename(**prompt_args)
+      file_paths = [file_path] if file_path else []
+  finally:
+    root.destroy()
   if refocus_after_selection: utils.focus_console_window()
   return list(file_paths) if file_paths else []
 
