@@ -311,6 +311,8 @@ def prompt_for_folder(title: str, refocus_after_selection: bool = True) -> str |
 class FileTypesCategory(Enum):
   DEFAULT = 'DEFAULT'
   VIDEO = 'VIDEO'
+  VIDEO_MKV_PREFERRED = 'VIDEO_MKV_PREFERRED'
+  VIDEO_MKV_ONLY = 'VIDEO_MKV_ONLY'
   M3U8 = 'M3U8'
   MEDIA = 'MEDIA'
   LOG = 'LOG'
@@ -324,6 +326,15 @@ FILE_TYPES_MAPPING = {
   ],
   FileTypesCategory.VIDEO: [
     ('MP4 files', '*.mp4'),
+    ('MKV files', '*.mkv'),
+    ('All Files', '*.*'),
+  ],
+  FileTypesCategory.VIDEO_MKV_PREFERRED: [
+    ('MKV files', '*.mkv'),
+    ('MP4 files', '*.mp4'),
+    ('All Files', '*.*'),
+  ],
+  FileTypesCategory.VIDEO_MKV_ONLY: [
     ('MKV files', '*.mkv'),
     ('All Files', '*.*'),
   ],
